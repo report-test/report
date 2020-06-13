@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Report</title>
   <meta charset="utf-8">
@@ -13,171 +14,139 @@
 </head>
 <script>
 
-$(document).ready(function () {
-  var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  $(document).ready(function () {
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
     $.getJSON("https://madu-mdb.herokuapp.com/api/get/content/all", function (result) {
-      console.log(result.length);       
+      console.log(result.length);
       // $("#totalcontents").text(result.length);
       for (i in result) {
         var datestring = result[i].dateString == null ? "no date" : result[i].dateString;
-        if(datestring != "no date"){
+        if (datestring != "no date") {
           var d = new Date(datestring);
-          datestring = d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
+          datestring = d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
           console.log(datestring);
         }
         var title = result[i].title == null ? "no title" : result[i].title;
         var sprint = result[i].sprint == null ? "no content" : result[i].sprint;
         var activity = result[i].activity == null ? "no content" : result[i].activity;
-        var percentage = result[i].percentage == null ? "no content" : result[i].percentage;        
-        $("tbody").append("<tr><td id=\""+result[i]._id+"\">"+datestring+"</td><td>"+title+"</td><td>"+sprint+"</td><td>"+activity+"</td><td>"+percentage+"</td></tr>");        
-        
-        
+        var percentage = result[i].percentage == null ? "no content" : result[i].percentage;
+        $("tbody").append("<tr><td id=\"" + result[i]._id + "\">" + datestring + "</td><td>" + title + "</td><td>" + sprint + "</td><td>" + activity + "</td><td>" + percentage + "</td></tr>");
+
+
       }
-    });    
-    
-    $("#search").click(function () {          
-      var date=$("#search_date").val();
-      $('#formMas1')[0].reset();
-      $.getJSON("https://madu-mdb.herokuapp.com/api/get/content/all", function (result) {
-      console.log(result.length);       
-      // $("#totalcontents").text(result.length);
-      for (i in result) {
-        var datestring = result[i].dateString == null ? "no date" : result[i].dateString;
-        if(datestring != "no date"){
-          var d = new Date(datestring);
-          datestring = d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
-          console.log(datestring);
-        }
-        var title = result[i].title == null ? "no title" : result[i].title;
-        var sprint = result[i].sprint == null ? "no content" : result[i].sprint;
-        var activity = result[i].activity == null ? "no content" : result[i].activity;
-        var percentage = result[i].percentage == null ? "no content" : result[i].percentage;        
-          if(date==datestring){
-         $("thead").append("<tr><td id=\""+result[i]._id+"\">"+datestring+"</td><td>"+title+"</td><td>"+sprint+"</td><td>"+activity+"</td><td>"+percentage+"</td></tr>");        
-          $("tbody").remove();
-          }
-        
-      }
-    }); 
-      
     });
-   
+
+    $("#search_date").on("keyup", function () {
+      var value = $(this).val().toLowerCase();
+      $("tbody tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+
+    
     $("#submit").click(function () {
-      var title =$("#track").val();
-      var sprint = $("#sprint").val();  
+      var title = $("#track").val();
+      var sprint = $("#sprint").val();
       var activity = $("#activity").val();
       var percentage = $("#percentage").val();
       var datestring = Date.now();
       console.log(datestring);
       console.log(title);
-      console.log(activity); 
+      console.log(activity);
       console.log(sprint);
-      console.log(percentage);      
+      console.log(percentage);
       $('#formMas')[0].reset();
 
-      if (sprint.length != 0 && activity.length != 0 && percentage.length!=0){
+      if (sprint.length != 0 && activity.length != 0 && percentage.length != 0) {
         console.log("Madu");
-        console.log(title+"=-----"+percentage);
+        console.log(title + "=-----" + percentage);
         $.post("https://madu-mdb.herokuapp.com/api/create/content",
-        {
-          title:title,
-          sprint:sprint,
-          dateString:datestring,
-          activity:activity,
-          percentage:percentage
-        },
-        function(data, status){
-          alert("Status: " + status);
-           
-        });
+          {
+            title: title,
+            sprint: sprint,
+            dateString: datestring,
+            activity: activity,
+            percentage: percentage
+          },
+          function (data, status) {
+            alert("Status: " + status);
+
+          });
       }
       else {
         alert("Title or Content is empty");
-         
+
       }
 
     });
-});
+  });
 
 
 
 </script>
+
 <body>
 
-<div class="container">
-  <h2>Welcome</h2>
-  <p>Here We Go....</p>
-  <ul class="nav nav-pills">
-    <li class="active"><a data-toggle="pill" href="#home">Submit Report</a></li>  
-    <!-- <li><a data-toggle="pill" href="#menu1">View Report</a></li> -->
-    <li><a data-toggle="pill" href="#menu2">View / Search Report</a></li>
-  </ul>
-  
-  <div class="tab-content">
-    <div id="home" class="tab-pane fade in active">
-        <form id="formMas"> 
+  <div class="container">
+    <h2>Welcome</h2>
+    <p>Here We Go....</p>
+    <ul class="nav nav-pills">
+      <li class="active"><a data-toggle="pill" href="#home">Submit Report</a></li>
+      <li><a data-toggle="pill" href="#menu2">View / Search Report</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div id="home" class="tab-pane fade in active">
+        <form id="formMas">
           <div class="form-group">
             <label for="inputsm">Track</label>
             <input class="form-control input-sm" id="track" type="text">
-          </div>  
-            <div class="form-group">
-              <label for="inputsm">CR/Sprint with Market</label>
-              <input class="form-control input-sm" id="sprint" type="text">
-            </div>             
-            <div class="form-group">
-                <label for="comment">Activity</label>
-                <textarea class="form-control" rows="5" id="activity"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="inputdefault">Overall Completion Percentage</label>
-                <input class="form-control" id="percentage" type="text">
-              </div>
-          </form>
-          <button type="button" class="btn btn-success" id="submit">Submit</button>
-    </div>
-    <div id="menu1" class="tab-pane fade"> 
-           <table class="table table-bordered">      
-        <thead>
-          <tr id="tablerow">
-            <th scope="col">Date</th>
-            <th scope="col">Track</th>
-            <th scope="col">CR/Sprint</th>
-            <th scope="col">Activity Done</th>
-            <th scope="col">Percentage</th>
-          </tr>
-        </thead>
-        <tbody id ="tablebody"></tbody>
-      </table>
-    </div>
-    <div id="menu2" class="tab-pane fade"> 
-      <table class="table">
-        <form id="formMas1"> 
+          </div>
           <div class="form-group">
-          <label for="inputsm">Search Date: (Example:20 April 2020)</label>
-          <input class="form-control input-sm" id="search_date" type="text">
-          <button type="button" class="btn btn-success" id="search">Search</button>
-
-          <!-- <button type="button" class="btn btn-success" id="Reset">Reset Table</button> -->
+            <label for="inputsm">CR/Sprint with Market</label>
+            <input class="form-control input-sm" id="sprint" type="text">
+          </div>
+          <div class="form-group">
+            <label for="comment">Activity</label>
+            <textarea class="form-control" rows="5" id="activity"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="inputdefault">Overall Completion Percentage</label>
+            <input class="form-control" id="percentage" type="text">
+          </div>
         </form>
-      <table class="table table-bordered">      
-        <thead>
-          <tr id="tablerow">
-            <th scope="col">Date</th>
-            <th scope="col">Track</th>
-            <th scope="col">CR/Sprint</th>
-            <th scope="col">Activity Done</th>
-            <th scope="col">Percentage</th>
-          </tr>
-        </thead>
-        <tbody id ="tablebody1"></tbody>
+        <button type="button" class="btn btn-success" id="submit">Submit</button>
+      </div>
+
+
+
+      <div id="menu2" class="tab-pane fade">
+        <table class="table">
+          <form id="formMas1">
+            <div class="form-group">
+              <label for="inputsm">Search Date: (Example:20 April 2020)</label>
+              <input class="form-control input-sm" id="search_date" type="text">
+          </form>
+          <table class="table table-bordered">
+            <thead>
+              <tr id="tablerow">
+                <th scope="col">Date</th>
+                <th scope="col">Track</th>
+                <th scope="col">CR/Sprint</th>
+                <th scope="col">Activity Done</th>
+                <th scope="col">Percentage</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+      </div>
+
       </table>
-   </div> 
-  
- </table> 
-</div>
-   
-</div>
+    </div>
+
+  </div>
 
 </body>
+
 </html>
